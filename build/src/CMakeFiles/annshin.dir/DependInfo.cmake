@@ -10,6 +10,10 @@ set(CMAKE_DEPENDS_LANGUAGES
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
   "/home/shahab/projects/annshin/src/annshin/body/body.cpp" "src/CMakeFiles/annshin.dir/annshin/body/body.cpp.o" "gcc" "src/CMakeFiles/annshin.dir/annshin/body/body.cpp.o.d"
   "/home/shahab/projects/annshin/src/annshin/brain/network.cpp" "src/CMakeFiles/annshin.dir/annshin/brain/network.cpp.o" "gcc" "src/CMakeFiles/annshin.dir/annshin/brain/network.cpp.o.d"
+  "/home/shahab/projects/annshin/src/annshin/loop/simulation.cpp" "src/CMakeFiles/annshin.dir/annshin/loop/simulation.cpp.o" "gcc" "src/CMakeFiles/annshin.dir/annshin/loop/simulation.cpp.o.d"
+  "/home/shahab/projects/annshin/src/annshin/render/raylib_renderer.cpp" "src/CMakeFiles/annshin.dir/annshin/render/raylib_renderer.cpp.o" "gcc" "src/CMakeFiles/annshin.dir/annshin/render/raylib_renderer.cpp.o.d"
+  "/home/shahab/projects/annshin/src/annshin/render/snapshot.cpp" "src/CMakeFiles/annshin.dir/annshin/render/snapshot.cpp.o" "gcc" "src/CMakeFiles/annshin.dir/annshin/render/snapshot.cpp.o.d"
+  "/home/shahab/projects/annshin/src/annshin/world/world.cpp" "src/CMakeFiles/annshin.dir/annshin/world/world.cpp.o" "gcc" "src/CMakeFiles/annshin.dir/annshin/world/world.cpp.o.d"
   "/home/shahab/projects/annshin/src/main.cpp" "src/CMakeFiles/annshin.dir/main.cpp.o" "gcc" "src/CMakeFiles/annshin.dir/main.cpp.o.d"
   "" "annshin" "gcc" "src/CMakeFiles/annshin.dir/link.d"
   )

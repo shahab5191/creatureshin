@@ -36,6 +36,19 @@ void Body::set_sensor_readings(int sensor_id, std::span<const double> readings) 
 
 void Body::apply_effect(int drive_id, double delta) {
   drives_[drive_id].value += delta; // §8 stimulus, one-shot
+  drives_[drive_id].clamp();
+}
+
+void Body::register_stimulus(int kind, std::vector<DriveEffect> effects) {
+  stimulus_map_[kind] = std::move(effects);
+}
+
+void Body::apply_contact(int kind, double magnitude) {
+  auto it = stimulus_map_.find(kind);
+  if (it == stimulus_map_.end())
+    return;
+  for (const DriveEffect &e : it->second)
+    apply_effect(e.drive_id, e.delta * magnitude);
 }
 
 double Body::compute_wellbeing() const {
@@ -52,6 +65,7 @@ void Body::on_tick(ANNNetwork::Network &net) {
   // 1. drift drives, and project each drive's deficit onto its neurons (§5.3/§6)
   for (Drive &d : drives_) {
     d.value += d.drift;
+    d.clamp();
     double current = d.intero_gain * d.deficit();
     if (current > 0.0)
       for (int n : d.neurons)

@@ -18,6 +18,13 @@ struct Drive {
   std::vector<int> neurons; // usually 1; more for population coding
   double intero_gain = 1.0; // deficit → current scale
 
+  // bounds keep wellbeing (squared error) finite; clamp after every mutation
+  double min_value = 0.0;
+  double max_value = 200.0;
+  void clamp() {
+    value = value < min_value ? min_value : (value > max_value ? max_value : value);
+  }
+
   double deficit() const { // one-sided shortfall below setpoint (§6)
     double d = setpoint - value;
     return d > 0.0 ? d : 0.0;

@@ -65,6 +65,26 @@ CMAKE_BINARY_DIR = /home/shahab/projects/annshin/build
 #=============================================================================
 # Targets provided globally by CMake.
 
+# Special rule for the target package
+package: preinstall
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --cyan "Run CPack packaging tool..."
+	cd /home/shahab/projects/annshin/build && /usr/bin/cpack --config ./CPackConfig.cmake
+.PHONY : package
+
+# Special rule for the target package
+package/fast: package
+.PHONY : package/fast
+
+# Special rule for the target package_source
+package_source:
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --cyan "Run CPack packaging tool for source..."
+	cd /home/shahab/projects/annshin/build && /usr/bin/cpack --config ./CPackSourceConfig.cmake
+.PHONY : package_source
+
+# Special rule for the target package_source
+package_source/fast: package_source
+.PHONY : package_source/fast
+
 # Special rule for the target edit_cache
 edit_cache:
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --cyan "Running CMake cache editor..."
@@ -84,6 +104,51 @@ rebuild_cache:
 # Special rule for the target rebuild_cache
 rebuild_cache/fast: rebuild_cache
 .PHONY : rebuild_cache/fast
+
+# Special rule for the target list_install_components
+list_install_components:
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --cyan "Available install components are: \"Unspecified\""
+.PHONY : list_install_components
+
+# Special rule for the target list_install_components
+list_install_components/fast: list_install_components
+.PHONY : list_install_components/fast
+
+# Special rule for the target install
+install: preinstall
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --cyan "Install the project..."
+	/usr/bin/cmake -P cmake_install.cmake
+.PHONY : install
+
+# Special rule for the target install
+install/fast: preinstall/fast
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --cyan "Install the project..."
+	/usr/bin/cmake -P cmake_install.cmake
+.PHONY : install/fast
+
+# Special rule for the target install/local
+install/local: preinstall
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --cyan "Installing only the local directory..."
+	/usr/bin/cmake -DCMAKE_INSTALL_LOCAL_ONLY=1 -P cmake_install.cmake
+.PHONY : install/local
+
+# Special rule for the target install/local
+install/local/fast: preinstall/fast
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --cyan "Installing only the local directory..."
+	/usr/bin/cmake -DCMAKE_INSTALL_LOCAL_ONLY=1 -P cmake_install.cmake
+.PHONY : install/local/fast
+
+# Special rule for the target install/strip
+install/strip: preinstall
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --cyan "Installing the project stripped..."
+	/usr/bin/cmake -DCMAKE_INSTALL_DO_STRIP=1 -P cmake_install.cmake
+.PHONY : install/strip
+
+# Special rule for the target install/strip
+install/strip/fast: preinstall/fast
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --cyan "Installing the project stripped..."
+	/usr/bin/cmake -DCMAKE_INSTALL_DO_STRIP=1 -P cmake_install.cmake
+.PHONY : install/strip/fast
 
 # The main all target
 all: cmake_check_build_system
@@ -178,6 +243,102 @@ annshin/brain/network.cpp.s:
 	cd /home/shahab/projects/annshin/build && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/annshin.dir/build.make src/CMakeFiles/annshin.dir/annshin/brain/network.cpp.s
 .PHONY : annshin/brain/network.cpp.s
 
+annshin/loop/simulation.o: annshin/loop/simulation.cpp.o
+.PHONY : annshin/loop/simulation.o
+
+# target to build an object file
+annshin/loop/simulation.cpp.o:
+	cd /home/shahab/projects/annshin/build && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/annshin.dir/build.make src/CMakeFiles/annshin.dir/annshin/loop/simulation.cpp.o
+.PHONY : annshin/loop/simulation.cpp.o
+
+annshin/loop/simulation.i: annshin/loop/simulation.cpp.i
+.PHONY : annshin/loop/simulation.i
+
+# target to preprocess a source file
+annshin/loop/simulation.cpp.i:
+	cd /home/shahab/projects/annshin/build && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/annshin.dir/build.make src/CMakeFiles/annshin.dir/annshin/loop/simulation.cpp.i
+.PHONY : annshin/loop/simulation.cpp.i
+
+annshin/loop/simulation.s: annshin/loop/simulation.cpp.s
+.PHONY : annshin/loop/simulation.s
+
+# target to generate assembly for a file
+annshin/loop/simulation.cpp.s:
+	cd /home/shahab/projects/annshin/build && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/annshin.dir/build.make src/CMakeFiles/annshin.dir/annshin/loop/simulation.cpp.s
+.PHONY : annshin/loop/simulation.cpp.s
+
+annshin/render/raylib_renderer.o: annshin/render/raylib_renderer.cpp.o
+.PHONY : annshin/render/raylib_renderer.o
+
+# target to build an object file
+annshin/render/raylib_renderer.cpp.o:
+	cd /home/shahab/projects/annshin/build && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/annshin.dir/build.make src/CMakeFiles/annshin.dir/annshin/render/raylib_renderer.cpp.o
+.PHONY : annshin/render/raylib_renderer.cpp.o
+
+annshin/render/raylib_renderer.i: annshin/render/raylib_renderer.cpp.i
+.PHONY : annshin/render/raylib_renderer.i
+
+# target to preprocess a source file
+annshin/render/raylib_renderer.cpp.i:
+	cd /home/shahab/projects/annshin/build && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/annshin.dir/build.make src/CMakeFiles/annshin.dir/annshin/render/raylib_renderer.cpp.i
+.PHONY : annshin/render/raylib_renderer.cpp.i
+
+annshin/render/raylib_renderer.s: annshin/render/raylib_renderer.cpp.s
+.PHONY : annshin/render/raylib_renderer.s
+
+# target to generate assembly for a file
+annshin/render/raylib_renderer.cpp.s:
+	cd /home/shahab/projects/annshin/build && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/annshin.dir/build.make src/CMakeFiles/annshin.dir/annshin/render/raylib_renderer.cpp.s
+.PHONY : annshin/render/raylib_renderer.cpp.s
+
+annshin/render/snapshot.o: annshin/render/snapshot.cpp.o
+.PHONY : annshin/render/snapshot.o
+
+# target to build an object file
+annshin/render/snapshot.cpp.o:
+	cd /home/shahab/projects/annshin/build && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/annshin.dir/build.make src/CMakeFiles/annshin.dir/annshin/render/snapshot.cpp.o
+.PHONY : annshin/render/snapshot.cpp.o
+
+annshin/render/snapshot.i: annshin/render/snapshot.cpp.i
+.PHONY : annshin/render/snapshot.i
+
+# target to preprocess a source file
+annshin/render/snapshot.cpp.i:
+	cd /home/shahab/projects/annshin/build && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/annshin.dir/build.make src/CMakeFiles/annshin.dir/annshin/render/snapshot.cpp.i
+.PHONY : annshin/render/snapshot.cpp.i
+
+annshin/render/snapshot.s: annshin/render/snapshot.cpp.s
+.PHONY : annshin/render/snapshot.s
+
+# target to generate assembly for a file
+annshin/render/snapshot.cpp.s:
+	cd /home/shahab/projects/annshin/build && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/annshin.dir/build.make src/CMakeFiles/annshin.dir/annshin/render/snapshot.cpp.s
+.PHONY : annshin/render/snapshot.cpp.s
+
+annshin/world/world.o: annshin/world/world.cpp.o
+.PHONY : annshin/world/world.o
+
+# target to build an object file
+annshin/world/world.cpp.o:
+	cd /home/shahab/projects/annshin/build && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/annshin.dir/build.make src/CMakeFiles/annshin.dir/annshin/world/world.cpp.o
+.PHONY : annshin/world/world.cpp.o
+
+annshin/world/world.i: annshin/world/world.cpp.i
+.PHONY : annshin/world/world.i
+
+# target to preprocess a source file
+annshin/world/world.cpp.i:
+	cd /home/shahab/projects/annshin/build && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/annshin.dir/build.make src/CMakeFiles/annshin.dir/annshin/world/world.cpp.i
+.PHONY : annshin/world/world.cpp.i
+
+annshin/world/world.s: annshin/world/world.cpp.s
+.PHONY : annshin/world/world.s
+
+# target to generate assembly for a file
+annshin/world/world.cpp.s:
+	cd /home/shahab/projects/annshin/build && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/annshin.dir/build.make src/CMakeFiles/annshin.dir/annshin/world/world.cpp.s
+.PHONY : annshin/world/world.cpp.s
+
 main.o: main.cpp.o
 .PHONY : main.o
 
@@ -209,6 +370,12 @@ help:
 	@echo "... clean"
 	@echo "... depend"
 	@echo "... edit_cache"
+	@echo "... install"
+	@echo "... install/local"
+	@echo "... install/strip"
+	@echo "... list_install_components"
+	@echo "... package"
+	@echo "... package_source"
 	@echo "... rebuild_cache"
 	@echo "... annshin"
 	@echo "... annshin/body/body.o"
@@ -217,6 +384,18 @@ help:
 	@echo "... annshin/brain/network.o"
 	@echo "... annshin/brain/network.i"
 	@echo "... annshin/brain/network.s"
+	@echo "... annshin/loop/simulation.o"
+	@echo "... annshin/loop/simulation.i"
+	@echo "... annshin/loop/simulation.s"
+	@echo "... annshin/render/raylib_renderer.o"
+	@echo "... annshin/render/raylib_renderer.i"
+	@echo "... annshin/render/raylib_renderer.s"
+	@echo "... annshin/render/snapshot.o"
+	@echo "... annshin/render/snapshot.i"
+	@echo "... annshin/render/snapshot.s"
+	@echo "... annshin/world/world.o"
+	@echo "... annshin/world/world.i"
+	@echo "... annshin/world/world.s"
 	@echo "... main.o"
 	@echo "... main.i"
 	@echo "... main.s"

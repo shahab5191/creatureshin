@@ -59,4 +59,19 @@ inline constexpr double TAU_MOTOR = 50.0;    // motor firing-rate smoothing
 // --- Loop (§5.7) ---
 inline constexpr int TICKS_PER_WORLD_STEP = 10;
 
+// --- World (§8) ---
+inline constexpr double WORLD_HALF   = 12.0;  // world spans [-HALF, HALF] each axis
+inline constexpr double MOVE_GAIN    = 0.003; // thrust(rate) → distance / world-step
+inline constexpr double TURN_GAIN    = 0.010; // (rateL-rateR) → radians / world-step
+inline constexpr double SMELL_SCALE  = 6.0;   // smell = strength·exp(-dist/scale)
+inline constexpr int    FOOD_COUNT   = 8;
+inline constexpr int    FIRE_COUNT   = 4;
+inline constexpr double FOOD_RADIUS  = 0.6;
+inline constexpr double FIRE_RADIUS  = 0.7;
+inline constexpr double FOOD_ENERGY  = 30.0;  // §8 food:{energy:+30}
+inline constexpr double FIRE_HEALTH  = -20.0; // §8 fire:{health:-20}
+
+// --- Render loop ---
+inline constexpr int TICKS_PER_FRAME = 40;    // sim ticks per rendered frame
+
 } // namespace annshin::config

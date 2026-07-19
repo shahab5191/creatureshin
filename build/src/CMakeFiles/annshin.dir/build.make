@@ -114,11 +114,71 @@ src/CMakeFiles/annshin.dir/annshin/body/body.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/annshin.dir/annshin/body/body.cpp.s"
 	cd /home/shahab/projects/annshin/build/src && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/shahab/projects/annshin/src/annshin/body/body.cpp -o CMakeFiles/annshin.dir/annshin/body/body.cpp.s
 
+src/CMakeFiles/annshin.dir/annshin/world/world.cpp.o: src/CMakeFiles/annshin.dir/flags.make
+src/CMakeFiles/annshin.dir/annshin/world/world.cpp.o: /home/shahab/projects/annshin/src/annshin/world/world.cpp
+src/CMakeFiles/annshin.dir/annshin/world/world.cpp.o: src/CMakeFiles/annshin.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/shahab/projects/annshin/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object src/CMakeFiles/annshin.dir/annshin/world/world.cpp.o"
+	cd /home/shahab/projects/annshin/build/src && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT src/CMakeFiles/annshin.dir/annshin/world/world.cpp.o -MF CMakeFiles/annshin.dir/annshin/world/world.cpp.o.d -o CMakeFiles/annshin.dir/annshin/world/world.cpp.o -c /home/shahab/projects/annshin/src/annshin/world/world.cpp
+
+src/CMakeFiles/annshin.dir/annshin/world/world.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/annshin.dir/annshin/world/world.cpp.i"
+	cd /home/shahab/projects/annshin/build/src && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/shahab/projects/annshin/src/annshin/world/world.cpp > CMakeFiles/annshin.dir/annshin/world/world.cpp.i
+
+src/CMakeFiles/annshin.dir/annshin/world/world.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/annshin.dir/annshin/world/world.cpp.s"
+	cd /home/shahab/projects/annshin/build/src && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/shahab/projects/annshin/src/annshin/world/world.cpp -o CMakeFiles/annshin.dir/annshin/world/world.cpp.s
+
+src/CMakeFiles/annshin.dir/annshin/loop/simulation.cpp.o: src/CMakeFiles/annshin.dir/flags.make
+src/CMakeFiles/annshin.dir/annshin/loop/simulation.cpp.o: /home/shahab/projects/annshin/src/annshin/loop/simulation.cpp
+src/CMakeFiles/annshin.dir/annshin/loop/simulation.cpp.o: src/CMakeFiles/annshin.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/shahab/projects/annshin/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object src/CMakeFiles/annshin.dir/annshin/loop/simulation.cpp.o"
+	cd /home/shahab/projects/annshin/build/src && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT src/CMakeFiles/annshin.dir/annshin/loop/simulation.cpp.o -MF CMakeFiles/annshin.dir/annshin/loop/simulation.cpp.o.d -o CMakeFiles/annshin.dir/annshin/loop/simulation.cpp.o -c /home/shahab/projects/annshin/src/annshin/loop/simulation.cpp
+
+src/CMakeFiles/annshin.dir/annshin/loop/simulation.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/annshin.dir/annshin/loop/simulation.cpp.i"
+	cd /home/shahab/projects/annshin/build/src && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/shahab/projects/annshin/src/annshin/loop/simulation.cpp > CMakeFiles/annshin.dir/annshin/loop/simulation.cpp.i
+
+src/CMakeFiles/annshin.dir/annshin/loop/simulation.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/annshin.dir/annshin/loop/simulation.cpp.s"
+	cd /home/shahab/projects/annshin/build/src && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/shahab/projects/annshin/src/annshin/loop/simulation.cpp -o CMakeFiles/annshin.dir/annshin/loop/simulation.cpp.s
+
+src/CMakeFiles/annshin.dir/annshin/render/snapshot.cpp.o: src/CMakeFiles/annshin.dir/flags.make
+src/CMakeFiles/annshin.dir/annshin/render/snapshot.cpp.o: /home/shahab/projects/annshin/src/annshin/render/snapshot.cpp
+src/CMakeFiles/annshin.dir/annshin/render/snapshot.cpp.o: src/CMakeFiles/annshin.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/shahab/projects/annshin/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object src/CMakeFiles/annshin.dir/annshin/render/snapshot.cpp.o"
+	cd /home/shahab/projects/annshin/build/src && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT src/CMakeFiles/annshin.dir/annshin/render/snapshot.cpp.o -MF CMakeFiles/annshin.dir/annshin/render/snapshot.cpp.o.d -o CMakeFiles/annshin.dir/annshin/render/snapshot.cpp.o -c /home/shahab/projects/annshin/src/annshin/render/snapshot.cpp
+
+src/CMakeFiles/annshin.dir/annshin/render/snapshot.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/annshin.dir/annshin/render/snapshot.cpp.i"
+	cd /home/shahab/projects/annshin/build/src && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/shahab/projects/annshin/src/annshin/render/snapshot.cpp > CMakeFiles/annshin.dir/annshin/render/snapshot.cpp.i
+
+src/CMakeFiles/annshin.dir/annshin/render/snapshot.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/annshin.dir/annshin/render/snapshot.cpp.s"
+	cd /home/shahab/projects/annshin/build/src && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/shahab/projects/annshin/src/annshin/render/snapshot.cpp -o CMakeFiles/annshin.dir/annshin/render/snapshot.cpp.s
+
+src/CMakeFiles/annshin.dir/annshin/render/raylib_renderer.cpp.o: src/CMakeFiles/annshin.dir/flags.make
+src/CMakeFiles/annshin.dir/annshin/render/raylib_renderer.cpp.o: /home/shahab/projects/annshin/src/annshin/render/raylib_renderer.cpp
+src/CMakeFiles/annshin.dir/annshin/render/raylib_renderer.cpp.o: src/CMakeFiles/annshin.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/shahab/projects/annshin/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Building CXX object src/CMakeFiles/annshin.dir/annshin/render/raylib_renderer.cpp.o"
+	cd /home/shahab/projects/annshin/build/src && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT src/CMakeFiles/annshin.dir/annshin/render/raylib_renderer.cpp.o -MF CMakeFiles/annshin.dir/annshin/render/raylib_renderer.cpp.o.d -o CMakeFiles/annshin.dir/annshin/render/raylib_renderer.cpp.o -c /home/shahab/projects/annshin/src/annshin/render/raylib_renderer.cpp
+
+src/CMakeFiles/annshin.dir/annshin/render/raylib_renderer.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/annshin.dir/annshin/render/raylib_renderer.cpp.i"
+	cd /home/shahab/projects/annshin/build/src && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/shahab/projects/annshin/src/annshin/render/raylib_renderer.cpp > CMakeFiles/annshin.dir/annshin/render/raylib_renderer.cpp.i
+
+src/CMakeFiles/annshin.dir/annshin/render/raylib_renderer.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/annshin.dir/annshin/render/raylib_renderer.cpp.s"
+	cd /home/shahab/projects/annshin/build/src && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/shahab/projects/annshin/src/annshin/render/raylib_renderer.cpp -o CMakeFiles/annshin.dir/annshin/render/raylib_renderer.cpp.s
+
 # Object files for target annshin
 annshin_OBJECTS = \
 "CMakeFiles/annshin.dir/main.cpp.o" \
 "CMakeFiles/annshin.dir/annshin/brain/network.cpp.o" \
-"CMakeFiles/annshin.dir/annshin/body/body.cpp.o"
+"CMakeFiles/annshin.dir/annshin/body/body.cpp.o" \
+"CMakeFiles/annshin.dir/annshin/world/world.cpp.o" \
+"CMakeFiles/annshin.dir/annshin/loop/simulation.cpp.o" \
+"CMakeFiles/annshin.dir/annshin/render/snapshot.cpp.o" \
+"CMakeFiles/annshin.dir/annshin/render/raylib_renderer.cpp.o"
 
 # External object files for target annshin
 annshin_EXTERNAL_OBJECTS =
@@ -126,10 +186,20 @@ annshin_EXTERNAL_OBJECTS =
 annshin: src/CMakeFiles/annshin.dir/main.cpp.o
 annshin: src/CMakeFiles/annshin.dir/annshin/brain/network.cpp.o
 annshin: src/CMakeFiles/annshin.dir/annshin/body/body.cpp.o
+annshin: src/CMakeFiles/annshin.dir/annshin/world/world.cpp.o
+annshin: src/CMakeFiles/annshin.dir/annshin/loop/simulation.cpp.o
+annshin: src/CMakeFiles/annshin.dir/annshin/render/snapshot.cpp.o
+annshin: src/CMakeFiles/annshin.dir/annshin/render/raylib_renderer.cpp.o
 annshin: src/CMakeFiles/annshin.dir/build.make
 annshin: src/CMakeFiles/annshin.dir/compiler_depend.ts
+annshin: _deps/raylib-build/raylib/libraylib.a
+annshin: /usr/lib64/libOpenGL.so
+annshin: /usr/lib64/libGLX.so
+annshin: /usr/lib64/libGLU.so
+annshin: /usr/lib64/librt.a
+annshin: /usr/lib64/libm.so
 annshin: src/CMakeFiles/annshin.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/home/shahab/projects/annshin/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Linking CXX executable ../annshin"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/home/shahab/projects/annshin/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Linking CXX executable ../annshin"
 	cd /home/shahab/projects/annshin/build/src && $(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/annshin.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.

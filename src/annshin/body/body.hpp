@@ -2,8 +2,10 @@
 #include "annshin/body/drive.hpp"
 #include "annshin/body/motor.hpp"
 #include "annshin/body/sensor.hpp"
+#include "annshin/body/stimulus.hpp"
 #include "annshin/brain/network.hpp"
 #include <span>
+#include <unordered_map>
 #include <vector>
 
 namespace annshin::body {
@@ -27,6 +29,10 @@ public:
   void set_sensor_readings(int sensor_id, std::span<const double> readings);
   void apply_effect(int drive_id, double delta); // one-shot stimulus (§8)
 
+  // Declarative stimulus table (§8): "adding a stimulus = one table entry".
+  void register_stimulus(int kind, std::vector<DriveEffect> effects);
+  void apply_contact(int kind, double magnitude = 1.0); // kind → drive effects
+
   // --- per brain tick, before net.step() ---
   void on_tick(ANNNetwork::Network &net);
 
@@ -39,6 +45,7 @@ public:
   double wellbeing() const { return wellbeing_prev_; }
   double last_hormone() const { return last_hormone_; }
   const Drive &drive(int id) const { return drives_[id]; }
+  std::size_t drive_count() const { return drives_.size(); }
 
 private:
   double compute_wellbeing() const; // §5.3
@@ -46,6 +53,7 @@ private:
   std::vector<Sensor> sensors_;
   std::vector<Drive> drives_;
   std::vector<Motor> motors_;
+  std::unordered_map<int, std::vector<DriveEffect>> stimulus_map_;
   double wellbeing_prev_ = 0.0;
   double last_hormone_ = 0.0;
   bool primed_ = false; // seed wellbeing_prev_ before first hormone
