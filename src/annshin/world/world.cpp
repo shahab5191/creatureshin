@@ -20,7 +20,7 @@ int World::define_stimulus(StimulusDef def) {
 
 void World::add_spawn_rule(SpawnRule r) {
   spawner_.add_rule(r);
-  spawner_.refill(objects_, half_, next_id_); // initial populate
+  spawner_.refill(objects_, creature_.pose.pos, half_, next_id_);
 }
 
 StepResult World::step(double thrust, double turn) {
@@ -40,7 +40,17 @@ StepResult World::step(double thrust, double turn) {
         e.alive = false;
     }
   }
-  spawner_.refill(objects_, half_, next_id_); // respawn consumed
+  // procedural (infinite) fire contacts
+  if (fire_kind_ >= 0) {
+    double fr = defs_[fire_kind_].radius + creature_.radius;
+    for_fires_near(cp, fr, [&](Vec3) { res.contacts.push_back({fire_kind_}); });
+  }
+  // procedural food contacts (not consumed; contact yields energy, which caps —
+  // so no infinite camping, and food is everywhere so foraging can bootstrap).
+  if (pfood_kind_ >= 0) {
+    double fr = defs_[pfood_kind_].radius + creature_.radius;
+    for_food_near(cp, fr, [&](Vec3) { res.contacts.push_back({pfood_kind_}); });
+  }
   return res;
 }
 
@@ -59,6 +69,28 @@ void World::odor_at(Vec3 p, double *out) const {
     for (int k = 0; k < cfg::N_ODOR; ++k)
       out[k] += intensity * d.scent[k];
   }
+  // procedural fire scent (infinite field)
+  if (fire_kind_ >= 0 && defs_[fire_kind_].smell_strength > 0.0) {
+    const StimulusDef &d = defs_[fire_kind_];
+    for_fires_near(p, cfg::SMELL_SCALE * 4.0, [&](Vec3 fp) {
+      double dx = fp.x - p.x, dz = fp.z - p.z;
+      double dist = std::sqrt(dx * dx + dz * dz);
+      double intensity = d.smell_strength * std::exp(-dist / cfg::SMELL_SCALE);
+      for (int k = 0; k < cfg::N_ODOR; ++k)
+        out[k] += intensity * d.scent[k];
+    });
+  }
+  // procedural food scent (infinite field)
+  if (pfood_kind_ >= 0 && defs_[pfood_kind_].smell_strength > 0.0) {
+    const StimulusDef &d = defs_[pfood_kind_];
+    for_food_near(p, cfg::SMELL_SCALE * 4.0, [&](Vec3 fp) {
+      double dx = fp.x - p.x, dz = fp.z - p.z;
+      double dist = std::sqrt(dx * dx + dz * dz);
+      double intensity = d.smell_strength * std::exp(-dist / cfg::SMELL_SCALE);
+      for (int k = 0; k < cfg::N_ODOR; ++k)
+        out[k] += intensity * d.scent[k];
+    });
+  }
 }
 
 // --- KinematicMovement (v1 physics) ---
@@ -66,18 +98,9 @@ void KinematicMovement::advance(Creature &c, double thrust, double turn,
                                 const World &w) {
   c.pose.heading += cfg::TURN_GAIN * turn;
   double th = thrust > 0.0 ? thrust : 0.0;
-  // move along the ground plane; y (height) is untouched in v1
+  // infinite world: move along the ground plane, no bounds
   c.pose.pos = c.pose.pos + forward_xz(c.pose.heading) * (cfg::MOVE_GAIN * th);
-  const double half = w.half_extent();
-  auto wrap = [&](double v) {
-    if (v > half)
-      v -= 2 * half;
-    else if (v < -half)
-      v += 2 * half;
-    return v;
-  };
-  c.pose.pos.x = wrap(c.pose.pos.x);
-  c.pose.pos.z = wrap(c.pose.pos.z);
+  (void)w;
 }
 
 // --- OdorSense: N_ODOR receptors × 2 nostrils channels ---

@@ -913,6 +913,7 @@ src/CMakeFiles/annshin.dir/annshin/loop/simulation.cpp.o: /home/shahab/projects/
 
 src/CMakeFiles/annshin.dir/annshin/render/raylib_renderer.cpp.o: /home/shahab/projects/annshin/src/annshin/render/raylib_renderer.cpp \
   _deps/raylib-src/src/raylib.h \
+  /home/shahab/projects/annshin/src/annshin/config.hpp \
   /home/shahab/projects/annshin/src/annshin/render/frame.hpp \
   /home/shahab/projects/annshin/src/annshin/render/raylib_renderer.hpp \
   /home/shahab/projects/annshin/src/annshin/render/renderer.hpp \
@@ -939,6 +940,8 @@ src/CMakeFiles/annshin.dir/annshin/render/raylib_renderer.cpp.o: /home/shahab/pr
   /usr/include/bits/pthreadtypes.h \
   /usr/include/bits/select.h \
   /usr/include/bits/stdint-intn.h \
+  /usr/include/bits/stdint-least.h \
+  /usr/include/bits/stdint-uintn.h \
   /usr/include/bits/stdio.h \
   /usr/include/bits/stdio_lim.h \
   /usr/include/bits/stdlib-bsearch.h \
@@ -970,6 +973,7 @@ src/CMakeFiles/annshin.dir/annshin/render/raylib_renderer.cpp.o: /home/shahab/pr
   /usr/include/bits/uintn-identity.h \
   /usr/include/bits/waitflags.h \
   /usr/include/bits/waitstatus.h \
+  /usr/include/bits/wchar.h \
   /usr/include/bits/wordsize.h \
   /usr/include/c++/16/backward/binders.h \
   /usr/include/c++/16/bit \
@@ -1021,6 +1025,7 @@ src/CMakeFiles/annshin.dir/annshin/render/raylib_renderer.cpp.o: /home/shahab/pr
   /usr/include/c++/16/compare \
   /usr/include/c++/16/concepts \
   /usr/include/c++/16/cstddef \
+  /usr/include/c++/16/cstdint \
   /usr/include/c++/16/cstdio \
   /usr/include/c++/16/debug/assertions.h \
   /usr/include/c++/16/debug/debug.h \
@@ -1058,13 +1063,15 @@ src/CMakeFiles/annshin.dir/annshin/render/raylib_renderer.cpp.o: /home/shahab/pr
   /usr/include/gnu/stubs.h \
   /usr/include/math.h \
   /usr/include/stdc-predef.h \
+  /usr/include/stdint.h \
   /usr/include/stdio.h \
   /usr/include/stdlib.h \
   /usr/include/sys/cdefs.h \
   /usr/include/sys/select.h \
   /usr/include/sys/types.h \
   /usr/lib/gcc/x86_64-redhat-linux/16/include/stdarg.h \
-  /usr/lib/gcc/x86_64-redhat-linux/16/include/stddef.h
+  /usr/lib/gcc/x86_64-redhat-linux/16/include/stddef.h \
+  /usr/lib/gcc/x86_64-redhat-linux/16/include/stdint.h
 
 src/CMakeFiles/annshin.dir/annshin/render/snapshot.cpp.o: /home/shahab/projects/annshin/src/annshin/render/snapshot.cpp \
   /home/shahab/projects/annshin/src/annshin/body/body.hpp \

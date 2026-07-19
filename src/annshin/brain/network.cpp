@@ -304,19 +304,61 @@ double Network::total_weight() const {
 
 void Network::aversive_depress_inputs(int neuron, double gain,
                                       int except_source) {
+  double post = spike_rate(neuron);
+  double ap = post / (post + 4.0); // this motor's own activity (post-factor)
+  if (ap <= 0.01)
+    return; // motor wasn't firing → it didn't cause the harm → no blame
   for (int gidx : in_edges_[neuron]) {
     Synapse &s = pool_[gidx];
     if (s.source == except_source)
       continue; // protect the withdrawal reflex
-    double act = spike_rate(s.source);
-    double a = act / (act + 4.0); // 0..1 saturating source activity
+    double a = spike_rate(s.source);
+    a = a / (a + 4.0); // source (pre) activity
     if (a <= 0.01)
-      continue; // this input wasn't driving the motor → not to blame
-    double factor = 1.0 - gain * a;
+      continue;
+    double factor = 1.0 - gain * a * ap; // pre×post: motor-specific credit
     if (factor < 0.0)
       factor = 0.0;
     s.w = static_cast<float>(s.w * factor);
   }
+}
+
+void Network::appetitive_potentiate_inputs(int neuron, double gain,
+                                           int except_source) {
+  double post = spike_rate(neuron);
+  double ap = post / (post + 4.0); // this motor's own activity (post-factor)
+  if (ap <= 0.01)
+    return; // motor wasn't firing → it didn't earn the reward
+  for (int gidx : in_edges_[neuron]) {
+    Synapse &s = pool_[gidx];
+    if (s.source == except_source)
+      continue;
+    double a = spike_rate(s.source);
+    a = a / (a + 4.0); // source (pre) activity
+    if (a <= 0.01)
+      continue;
+    s.w = static_cast<float>(cap(s.w * (1.0 + gain * a * ap))); // pre×post
+  }
+}
+
+void Network::balance_motor_inputs(int mL, int mR, int except_source) {
+  double sL = 0.0, sR = 0.0;
+  for (int g : in_edges_[mL])
+    if (pool_[g].source != except_source)
+      sL += pool_[g].w;
+  for (int g : in_edges_[mR])
+    if (pool_[g].source != except_source)
+      sR += pool_[g].w;
+  if (sL <= 1e-6 || sR <= 1e-6)
+    return;
+  double target = 0.5 * (sL + sR);
+  double fL = target / sL, fR = target / sR;
+  for (int g : in_edges_[mL])
+    if (pool_[g].source != except_source)
+      pool_[g].w = static_cast<float>(cap(pool_[g].w * fL));
+  for (int g : in_edges_[mR])
+    if (pool_[g].source != except_source)
+      pool_[g].w = static_cast<float>(cap(pool_[g].w * fR));
 }
 
 void Network::collect_edges(std::vector<EdgeView> &out) const {

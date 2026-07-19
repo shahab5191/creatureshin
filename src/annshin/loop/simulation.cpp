@@ -1,6 +1,7 @@
 #include "annshin/loop/simulation.hpp"
 #include "annshin/config.hpp"
 
+#include <algorithm>
 #include <random>
 
 namespace annshin::loop {
@@ -22,6 +23,8 @@ Simulation::Simulation() : net_(N, cfg::FANOUT), world_(cfg::WORLD_HALF) {
   const int ML = R + 2, MR = R + 3;
   const int NOCI = R + 4; // burn receptor (nociceptor), fires on fire contact
   noci_neuron_ = NOCI;
+  motor_l_ = ML;
+  motor_r_ = MR;
 
   // sensory + motor cells excitatory (afferents/drivers excite)
   for (int i = 0; i <= NOCI; ++i)
@@ -61,16 +64,19 @@ Simulation::Simulation() : net_(N, cfg::FANOUT), world_(cfg::WORLD_HALF) {
   fire.smell_strength = 1.0;
   set_scent(fire, "fire");
   fire_kind_ = world_.define_stimulus(fire);
-  fire_radius_ = cfg::FIRE_RADIUS;
-  fire_count_ = cfg::FIRE_COUNT;
-
-  // CURRICULUM: spawn food now; fire is withheld until after the warmup so the
-  // creature first learns to approach food, then learns fire on top.
-  world_.add_spawn_rule(SpawnRule{food_kind_, cfg::FOOD_COUNT, cfg::FOOD_RADIUS});
+  // INFINITE procedural fire: any grid cell may hold a fire (probability-based),
+  // so any (x,z) is a potential fire — no fixed count.
+  world_.set_procedural_fire(fire_kind_, cfg::FIRE_CELL, cfg::FIRE_PROB,
+                             cfg::FIRE_SEED);
+  world_.set_procedural_food(food_kind_, cfg::FOOD_CELL, cfg::FOOD_PROB,
+                             cfg::FOOD_SEED);
   world_.set_movement(std::make_unique<KinematicMovement>());
 
   body_.register_stimulus(food_kind_, {{energy_drive_, cfg::FOOD_ENERGY}});
   body_.register_stimulus(fire_kind_, {{health_drive_, cfg::FIRE_HEALTH}});
+  // staying below this energy hurts (ongoing hunger pain), so 0 energy is not
+  // merely neutral — the creature is driven to eat.
+  body_.set_pain_threshold(energy_drive_, cfg::ENERGY_PAIN_BELOW);
 
   bindings_.push_back({std::make_unique<OdorSense>(), odor});
 
@@ -97,12 +103,6 @@ Simulation::Simulation() : net_(N, cfg::FANOUT), world_(cfg::WORLD_HALF) {
 }
 
 void Simulation::tick() {
-  // curriculum: introduce fire once the food-only warmup is over
-  if (!fire_added_ && net_.tick() >= cfg::CURRICULUM_WARMUP) {
-    world_.add_spawn_rule(SpawnRule{fire_kind_, fire_count_, fire_radius_});
-    fire_added_ = true;
-  }
-
   if (net_.tick() % cfg::TICKS_PER_WORLD_STEP == 0) {
     DriveCommand cmd = body_.decode_drive(net_);
     StepResult res = world_.step(cmd.thrust, cmd.turn);
@@ -120,6 +120,29 @@ void Simulation::tick() {
       b.model->sample(world_, world_.creature().pose, scratch_);
       body_.set_sensor_readings(b.sensor_id, scratch_);
     }
+
+    // Smell-gradient "serotonin" learning: reinforce the current motor drive
+    // when food smell is RISING (approaching food), punish it when fire smell is
+    // rising (approaching fire). Dense signal → real taxis, not just contact.
+    auto cp = world_.creature().pose.pos;
+    double fs = world_.food_smell_at(cp), frs = world_.fire_smell_at(cp);
+    double dfood = fs - prev_food_smell_, dfire = frs - prev_fire_smell_;
+    prev_food_smell_ = fs;
+    prev_fire_smell_ = frs;
+    if (dfood > 0.0) {
+      double g = cfg::APPETITIVE_GAIN *
+                 std::min(1.0, dfood * cfg::SMELL_GRAD_GAIN);
+      net_.appetitive_potentiate_inputs(motor_l_, g, noci_neuron_);
+      net_.appetitive_potentiate_inputs(motor_r_, g, noci_neuron_);
+    }
+    if (dfire > 0.0) {
+      double g = cfg::AVERSIVE_GAIN * std::min(1.0, dfire * cfg::SMELL_GRAD_GAIN);
+      net_.aversive_depress_inputs(motor_l_, g, noci_neuron_);
+      net_.aversive_depress_inputs(motor_r_, g, noci_neuron_);
+    }
+    // homeostasis: keep the two motors' total drive balanced → no permanent turn
+    // bias (kills the endless-circling failure mode) while steering is preserved.
+    net_.balance_motor_inputs(motor_l_, motor_r_, noci_neuron_);
   }
   body_.on_tick(net_);
   net_.step();

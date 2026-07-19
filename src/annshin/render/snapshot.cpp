@@ -18,6 +18,25 @@ WorldFrame build_world_frame(const annshin::world::World &w) {
     f.objects.push_back({static_cast<float>(e.pos.x),
                          static_cast<float>(e.pos.z), e.kind, sr});
   }
+  // procedural fires + food near the creature (enough for the minimap extent)
+  float sr = static_cast<float>(annshin::config::SMELL_SCALE);
+  auto center = w.creature().pose.pos;
+  if (w.fire_kind() >= 0) {
+    int fk = w.fire_kind();
+    w.for_fires_near(center, annshin::config::MINIMAP_HALF,
+                     [&](annshin::world::Vec3 fp) {
+                       f.objects.push_back({static_cast<float>(fp.x),
+                                            static_cast<float>(fp.z), fk, sr});
+                     });
+  }
+  if (w.food_kind() >= 0) {
+    int fk = w.food_kind();
+    w.for_food_near(center, annshin::config::MINIMAP_HALF,
+                    [&](annshin::world::Vec3 fp) {
+                      f.objects.push_back({static_cast<float>(fp.x),
+                                           static_cast<float>(fp.z), fk, sr});
+                    });
+  }
   return f;
 }
 

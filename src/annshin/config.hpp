@@ -67,13 +67,24 @@ inline constexpr int K_SCENT = 3;    // receptors a single smell activates (spar
 // --- Curriculum ---
 inline constexpr tick_t CURRICULUM_WARMUP = 0;     // DIAGNOSTIC: fire from t=0
 
-// --- World (§8) ---
-inline constexpr double WORLD_HALF   = 12.0;  // world spans [-HALF, HALF] each axis
+// --- World (§8) — INFINITE plane, procedural fire ---
+inline constexpr double WORLD_HALF   = 40.0;  // food spawn region half-extent (movement is unbounded)
+inline constexpr double VIEW_HALF    = 14.0;  // main (camera) view shows ±VIEW_HALF around the creature
+inline constexpr double MINIMAP_HALF = 60.0;  // minimap shows ±MINIMAP_HALF around the creature
 inline constexpr double MOVE_GAIN    = 0.006; // thrust(rate) → distance / world-step
 inline constexpr double TURN_GAIN    = 0.004; // (rateL-rateR) → radians / world-step
-inline constexpr double SMELL_SCALE  = 12.0;  // smell = strength·exp(-dist/scale) (larger = farther reach)
-inline constexpr int    FOOD_COUNT   = 0;   // DIAGNOSTIC: food off
-inline constexpr int    FIRE_COUNT   = 6;
+inline constexpr double TONIC_THRUST = 7.0;   // baseline forward drive (always creeps; wide arcs, no spin)
+inline constexpr double TURN_CAP     = 5.0;   // max |turn| → curves instead of pivoting in place
+inline constexpr double SMELL_SCALE  = 5.0;   // smell falloff — LOCAL (steep gradient, escapable)
+
+// Procedural fire & food: any grid cell may contain one (deterministic hash).
+// Sparse fire so there are safe zones between fires (avoidance is achievable).
+inline constexpr double FIRE_CELL    = 12.0;  // grid spacing for procedural fires
+inline constexpr double FIRE_PROB    = 0.12;  // fraction of cells with a fire (sparse)
+inline constexpr unsigned FIRE_SEED  = 90210;
+inline constexpr double FOOD_CELL    = 12.0;  // grid spacing for procedural food
+inline constexpr double FOOD_PROB    = 0.20;  // fraction of cells with food
+inline constexpr unsigned FOOD_SEED  = 13579;
 inline constexpr double FOOD_RADIUS  = 0.6;
 inline constexpr double FIRE_RADIUS  = 0.8;
 inline constexpr double FOOD_ENERGY  = 30.0;  // §8 food:{energy:+30}
@@ -89,7 +100,11 @@ inline constexpr double R_MAX_POS = 2.0;      // clamp on positive hormone
 inline constexpr double R_MAX_NEG = 8.0;      // clamp on negative hormone (pain bites)
 inline constexpr double PAIN_LINGER = 0.99;   // pain trace decay/tick (lingers ~hundreds of ticks)
 inline constexpr double PAIN_GAIN   = 0.01;   // pain-trace → hormone scale
-inline constexpr double AVERSIVE_GAIN = 0.35; // on pain, depress active pathways (targeted)
+inline constexpr double AVERSIVE_GAIN   = 0.35; // on pain, depress active pathways (targeted)
+inline constexpr double APPETITIVE_GAIN = 0.35; // on eating, potentiate active pathways
+inline constexpr double SMELL_GRAD_GAIN = 80.0; // Δsmell → conditioning strength (serotonin-like)
+inline constexpr double ENERGY_PAIN_BELOW = 25.0; // energy below this hurts (starvation)
+inline constexpr double STARVE_GAIN   = 0.05; // starvation deficit → ongoing negative hormone
 inline constexpr double NOCI_AMP      = 4.0;  // burn-receptor current on fire contact
 inline constexpr double NOCI_REFLEX_W = 1.2;  // nociceptor→motor (innate withdrawal reflex)
 

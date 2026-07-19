@@ -26,7 +26,8 @@ struct Drive {
   // recovery "refunds" the pain and the creature seeks the harm. (§ hormone
   // bug)
   bool reward_on_improve = true;
-  double prev_value = 0.0; // set to value on add; used for per-drive ΔW
+  double prev_value = 0.0;              // set to value on add; used for per-drive ΔW
+  double pain_threshold = -1e18;        // below this level the drive hurts (ongoing)
 
   void clamp() {
     value =

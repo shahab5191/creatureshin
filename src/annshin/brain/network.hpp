@@ -78,6 +78,17 @@ public:
   // withdrawal reflex from being weakened by the very pain it responds to).
   void aversive_depress_inputs(int neuron, double gain, int except_source = -1);
 
+  // Appetitive conditioning (mirror of aversive): on reward (eating), potentiate
+  // a motor neuron's INCOMING synapses ∝ each source's activity — strengthen
+  // whatever drove the motor toward the good outcome. Capped at w_max.
+  void appetitive_potentiate_inputs(int neuron, double gain,
+                                    int except_source = -1);
+
+  // Homeostatic balance: rescale two motors' (non-except) input weights so their
+  // TOTALS match → no permanent turn bias (steering = per-input differences,
+  // which survive; a global L>R drift, which causes endless circling, is removed).
+  void balance_motor_inputs(int mL, int mR, int except_source = -1);
+
   // Wire an innate (but plastic) pathway, e.g. sensor→motor. It carries NO
   // built-in policy (small weights); reward-STDP learns the mapping. Pinned so
   // punishment can reshape its weights but never delete the wire.

@@ -28,7 +28,13 @@ double Body::motor_force(int motor_id, const ANNNetwork::Network &net) const {
 DriveCommand Body::decode_drive(const ANNNetwork::Network &net) const {
   double left = motors_.size() > 0 ? motors_[0].force(net) : 0.0;
   double right = motors_.size() > 1 ? motors_[1].force(net) : 0.0;
-  return differential(left, right);
+  // tonic forward drive (always creeping) + capped turn → the creature curves
+  // instead of pivoting in place, so it can't get stuck spinning on a fire.
+  double thrust = cfg::TONIC_THRUST + left + right;
+  double turn = left - right;
+  turn = turn > cfg::TURN_CAP ? cfg::TURN_CAP
+                             : (turn < -cfg::TURN_CAP ? -cfg::TURN_CAP : turn);
+  return {thrust, turn};
 }
 
 void Body::set_sensor_readings(int sensor_id, std::span<const double> readings) {
@@ -51,7 +57,9 @@ void Body::apply_contact(int kind, double magnitude) {
   for (const DriveEffect &e : it->second) {
     apply_effect(e.drive_id, e.delta * magnitude);
     if (e.delta < 0.0)
-      pain_event_ = true; // harmful contact — fires aversive even at 0 health
+      pain_event_ = true; // harmful contact → aversive (even at 0 health)
+    else if (e.delta > 0.0)
+      food_event_ = true; // rewarding contact → appetitive
   }
 }
 
@@ -98,6 +106,13 @@ void Body::on_tick(ANNNetwork::Network &net) {
     }
     d.prev_value = d.value;
   }
+  // ongoing level-pain: a drive below its pain_threshold hurts continuously
+  // (e.g. starvation at low energy) — a state, not an event, so it's not lingered.
+  double level_pain = 0.0;
+  for (const Drive &d : drives_)
+    if (d.value < d.pain_threshold)
+      level_pain += (d.pain_threshold - d.value);
+
   pain_trace_ = pain_trace_ * cfg::PAIN_LINGER + damage; // linger + this tick
 
   // Aversive conditioning: on a harmful CONTACT (not the health-derivative, so
@@ -109,8 +124,17 @@ void Body::on_tick(ANNNetwork::Network &net) {
       net.aversive_depress_inputs(m.neuron, cfg::AVERSIVE_GAIN, protected_source_);
     pain_event_ = false;
   }
+  // Appetitive conditioning: on eating, potentiate the motor's active inputs —
+  // strengthen whatever steered the creature to the food (learns to approach).
+  if (food_event_) {
+    for (const Motor &m : motors_)
+      net.appetitive_potentiate_inputs(m.neuron, cfg::APPETITIVE_GAIN,
+                                       protected_source_);
+    food_event_ = false;
+  }
 
-  double R = cfg::K_REWARD * dW - cfg::PAIN_GAIN * pain_trace_;
+  double R = cfg::K_REWARD * dW - cfg::PAIN_GAIN * pain_trace_ -
+             cfg::STARVE_GAIN * level_pain;
   R = R > cfg::R_MAX_POS ? cfg::R_MAX_POS
                          : (R < -cfg::R_MAX_NEG ? -cfg::R_MAX_NEG : R);
   wellbeing_prev_ = compute_wellbeing(); // for the HUD/observation only

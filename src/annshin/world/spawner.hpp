@@ -17,7 +17,10 @@ public:
   explicit Spawner(unsigned seed) : rng_(seed) {}
   void add_rule(SpawnRule r) { rules_.push_back(r); }
 
-  void refill(std::vector<Entity> &entities, double half, int &next_id) {
+  // Keep each kind topped up to its target, spawned within ±half of `center`
+  // (center = creature, so food streams around it in the infinite world).
+  void refill(std::vector<Entity> &entities, Vec3 center, double half,
+              int &next_id) {
     std::uniform_real_distribution<double> u(-half, half);
     for (const SpawnRule &rule : rules_) {
       int count = 0;
@@ -29,7 +32,7 @@ public:
         e.id = next_id++;
         e.kind = rule.kind;
         e.radius = rule.radius;
-        e.pos = {u(rng_), 0.0, u(rng_)}; // on the ground plane (y = 0)
+        e.pos = {center.x + u(rng_), 0.0, center.z + u(rng_)};
         e.alive = true;
         entities.push_back(e);
         ++count;

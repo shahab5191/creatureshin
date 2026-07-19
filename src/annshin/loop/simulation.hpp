@@ -44,6 +44,8 @@ private:
   double fire_radius_ = 0.0;
   int fire_count_ = 0;
   int noci_neuron_ = 0; // burn receptor (nociceptor)
+  int motor_l_ = 0, motor_r_ = 0;
+  double prev_food_smell_ = 0.0, prev_fire_smell_ = 0.0; // smell-gradient signal
 };
 
 } // namespace annshin::loop

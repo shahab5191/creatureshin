@@ -37,6 +37,11 @@ public:
   // innate withdrawal-reflex pathway).
   void set_protected_source(int neuron) { protected_source_ = neuron; }
 
+  // Below `t`, this drive causes ongoing pain (e.g. starvation at low energy).
+  void set_pain_threshold(int drive_id, double t) {
+    drives_[drive_id].pain_threshold = t;
+  }
+
   // --- per brain tick, before net.step() ---
   void on_tick(ANNNetwork::Network &net);
 
@@ -59,6 +64,7 @@ private:
   std::vector<Motor> motors_;
   std::unordered_map<int, std::vector<DriveEffect>> stimulus_map_;
   bool pain_event_ = false;  // a harmful contact happened (independent of health clamp)
+  bool food_event_ = false;  // a rewarding contact happened (eating)
   int protected_source_ = -1; // reflex source the aversive rule won't weaken
   double pain_trace_ = 0.0; // lingering pain (decays); from one-sided drives
   double wellbeing_prev_ = 0.0;

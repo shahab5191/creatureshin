@@ -1,4 +1,5 @@
 #include "annshin/render/raylib_renderer.hpp"
+#include "annshin/config.hpp"
 #include "raylib.h"
 
 #include <cmath>
@@ -41,8 +42,12 @@ void RaylibRenderer::draw(const RenderFrame &f) {
   const int world = h_ - 2 * m; // left square: the world map
   const int wx = m, wy = m;
   const float half = f.world.half_extent > 0 ? f.world.half_extent : 1.f;
-  auto wsx = [&](float x) { return wx + (int)((x + half) / (2 * half) * world); };
-  auto wsy = [&](float z) { return wy + (int)((half - z) / (2 * half) * world); };
+  // camera follows the creature (infinite world): show ±VIEW_HALF around it
+  const float vhalf = (float)annshin::config::VIEW_HALF;
+  const float ccx = f.world.creature_x, ccz = f.world.creature_z;
+  auto wsx = [&](float x) { return wx + (int)((x - ccx + vhalf) / (2 * vhalf) * world); };
+  auto wsy = [&](float z) { return wy + (int)((vhalf - (z - ccz)) / (2 * vhalf) * world); };
+  (void)half;
 
   const int brain = 480; // right square: the brain map
   const int bx = wx + world + 20, by = m;
@@ -55,12 +60,12 @@ void RaylibRenderer::draw(const RenderFrame &f) {
   // ---- world map ----
   DrawRectangleLines(wx, wy, world, world, Color{60, 60, 84, 255});
   DrawText("world", wx + 6, wy + 6, 18, Color{120, 120, 150, 255});
-  BeginScissorMode(wx, wy, world, world); // clip scent circles to the map
-  // scent fields: translucent radial gradient (fades with the smell falloff)
+  BeginScissorMode(wx, wy, world, world); // clip to the camera viewport
+  // scent fields: translucent radial gradient (camera-scaled)
   for (const auto &o : f.world.objects) {
     if (o.smell_radius <= 0.f)
       continue;
-    float pr = o.smell_radius / (2 * half) * world;
+    float pr = o.smell_radius / (2 * vhalf) * world;
     Color base = (o.kind == 0) ? GREEN : RED;
     DrawCircleGradient(wsx(o.x), wsy(o.z), pr, Color{base.r, base.g, base.b, 45},
                        Color{base.r, base.g, base.b, 0});
@@ -68,13 +73,35 @@ void RaylibRenderer::draw(const RenderFrame &f) {
   // objects
   for (const auto &o : f.world.objects)
     DrawCircle(wsx(o.x), wsy(o.z), 6.f, (o.kind == 0) ? GREEN : RED);
-  // creature
-  int cx = wsx(f.world.creature_x), cy = wsy(f.world.creature_z);
+  // creature (centered by the camera)
+  int cx = wsx(ccx), cy = wsy(ccz);
   DrawCircleLines(cx, cy, 8.f, RAYWHITE);
   DrawCircle(cx, cy, 4.f, RAYWHITE);
   DrawLine(cx, cy, cx + (int)(16 * std::cos(f.world.creature_heading)),
            cy - (int)(16 * std::sin(f.world.creature_heading)), RAYWHITE);
   EndScissorMode();
+
+  // ---- minimap (region around creature; food/fire = 1px, creature = white) ----
+  {
+    const int mm = 150;
+    const int mmx = wx + world - mm - 8, mmy = wy + 8;
+    const float H = (float)annshin::config::MINIMAP_HALF;
+    DrawRectangle(mmx, mmy, mm, mm, Color{8, 8, 14, 220});
+    DrawRectangleLines(mmx, mmy, mm, mm, Color{80, 80, 100, 255});
+    auto mx = [&](float x) { return mmx + (int)((x - ccx + H) / (2 * H) * mm); };
+    auto my = [&](float z) { return mmy + (int)((H - (z - ccz)) / (2 * H) * mm); };
+    for (const auto &o : f.world.objects) {
+      int px = mx(o.x), py = my(o.z);
+      if (px < mmx || px >= mmx + mm || py < mmy || py >= mmy + mm)
+        continue;
+      DrawRectangle(px, py, 2, 2, (o.kind == 0) ? GREEN : RED);
+    }
+    DrawRectangle(mx(ccx) - 1, my(ccz) - 1, 3, 3, RAYWHITE); // creature (center)
+    DrawRectangleLines(mx(ccx - vhalf), my(ccz + vhalf), // current view box
+                       mx(ccx + vhalf) - mx(ccx - vhalf),
+                       my(ccz - vhalf) - my(ccz + vhalf), Color{200, 200, 120, 160});
+    DrawText("map", mmx + 4, mmy + 2, 12, Color{120, 120, 150, 255});
+  }
 
   // ---- brain graph (synapse edges + neuron nodes; flash on firing) ----
   DrawRectangleLines(bx, by, brain, brain, Color{60, 60, 84, 255});
@@ -111,12 +138,13 @@ void RaylibRenderer::draw(const RenderFrame &f) {
         continue;
       Vector2 pa{(float)bsx(a.x), (float)bsy(a.y)};
       Vector2 pb{(float)bsx(b.x), (float)bsy(b.y)};
-      if (a.flash > 0.05f) {
+      if (a.flash > 0.05f) { // fired synapse (source just spiked) → green
         unsigned char al = (unsigned char)(90 + 165 * a.flash);
-        DrawLineEx(pa, pb, 1.0f + 3.0f * a.flash, Color{150, 210, 255, al});
-      } else {
-        unsigned char al = (unsigned char)(18 + 150 * e.w);
-        DrawLineEx(pa, pb, 0.6f + 2.6f * e.w, Color{95, 100, 140, al});
+        DrawLineEx(pa, pb, 1.0f + 3.0f * a.flash, Color{60, 255, 110, al});
+      } else { // resting → grayscale (brightness & opacity ∝ weight)
+        unsigned char g = (unsigned char)(50 + 150 * e.w);
+        unsigned char al = (unsigned char)(20 + 150 * e.w);
+        DrawLineEx(pa, pb, 0.6f + 2.6f * e.w, Color{g, g, g, al});
       }
     }
   }
