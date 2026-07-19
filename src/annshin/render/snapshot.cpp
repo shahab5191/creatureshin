@@ -12,8 +12,11 @@ WorldFrame build_world_frame(const annshin::world::World &w) {
   for (const auto &e : w.objects()) {
     if (!e.alive)
       continue;
+    float sr = w.stimulus(e.kind).smell_strength > 0.0
+                   ? static_cast<float>(annshin::config::SMELL_SCALE)
+                   : 0.f;
     f.objects.push_back({static_cast<float>(e.pos.x),
-                         static_cast<float>(e.pos.z), e.kind});
+                         static_cast<float>(e.pos.z), e.kind, sr});
   }
   return f;
 }
@@ -31,10 +34,11 @@ BrainFrame build_brain_frame(const ANNNetwork::Network &net) {
     float flash = (age >= 0 && age < cfg::FLASH_TICKS)
                       ? static_cast<float>(1.0 - age / cfg::FLASH_TICKS)
                       : 0.f;
+    bool in_rf = (age >= 0 && age <= cfg::H_RECENT); // reward working set
     f.neurons.push_back({static_cast<float>(p.x), static_cast<float>(p.y),
                          static_cast<float>(p.z),
                          static_cast<float>(net.spike_rate(id)), flash,
-                         net.neuron_polarity(id)});
+                         net.neuron_polarity(id), in_rf});
   }
   std::vector<ANNNetwork::Network::EdgeView> es;
   net.collect_edges(es);

@@ -16,6 +16,10 @@ public:
 
 private:
   int w_, h_;
+  // view toggles (clickable checkboxes)
+  bool show_edges_ = true;
+  bool rf_only_ = false;    // show only the reward/punish working set
+  bool flash_only_ = false; // show only neurons firing right now
 };
 
 } // namespace annshin::render

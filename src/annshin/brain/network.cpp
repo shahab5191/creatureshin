@@ -283,6 +283,9 @@ void Network::apply_reward(double reward) {
   for (const Spike &sp : recently_fired) {
     for (int gidx : out_edges_[sp.id]) {
       Synapse &s = pool_[gidx];
+      if (s.pinned)
+        continue; // action pathway is shaped by targeted conditioning, not the
+                  // confused global hormone (whose sign flips on these)
       touch_synapse(s, t); // decay e (and w) to now
       s.w = static_cast<float>(cap(s.w + cfg::ETA * reward * s.elig_tag));
       if (s.w < cfg::W_PRUNE)
@@ -297,6 +300,23 @@ double Network::total_weight() const {
     if (s.alive)
       sum += s.w;
   return sum;
+}
+
+void Network::aversive_depress_inputs(int neuron, double gain,
+                                      int except_source) {
+  for (int gidx : in_edges_[neuron]) {
+    Synapse &s = pool_[gidx];
+    if (s.source == except_source)
+      continue; // protect the withdrawal reflex
+    double act = spike_rate(s.source);
+    double a = act / (act + 4.0); // 0..1 saturating source activity
+    if (a <= 0.01)
+      continue; // this input wasn't driving the motor → not to blame
+    double factor = 1.0 - gain * a;
+    if (factor < 0.0)
+      factor = 0.0;
+    s.w = static_cast<float>(s.w * factor);
+  }
 }
 
 void Network::collect_edges(std::vector<EdgeView> &out) const {

@@ -20,9 +20,11 @@ Simulation::Simulation() : net_(N, cfg::FANOUT), world_(cfg::WORLD_HALF) {
   const int HUNGER = R;   // interoceptive
   const int PAIN = R + 1;
   const int ML = R + 2, MR = R + 3;
+  const int NOCI = R + 4; // burn receptor (nociceptor), fires on fire contact
+  noci_neuron_ = NOCI;
 
   // sensory + motor cells excitatory (afferents/drivers excite)
-  for (int i = 0; i <= MR; ++i)
+  for (int i = 0; i <= NOCI; ++i)
     net_.force_excitatory(i);
 
   std::vector<int> receptor_neurons(R);
@@ -33,9 +35,12 @@ Simulation::Simulation() : net_(N, cfg::FANOUT), world_(cfg::WORLD_HALF) {
   // gentle hunger drift: slow starvation so the negative-R gradient doesn't
   // punish the creature into paralysis before it learns to eat.
   energy_drive_ = body_.add_drive(Drive{100, 100, 1.0, -0.008, {HUNGER}, 0.05});
-  // health regenerates & caps at setpoint → each burn is a fresh punishment.
-  health_drive_ =
-      body_.add_drive(Drive{100, 100, 2.0, +0.02, {PAIN}, 0.05, 0.0, 100.0});
+  // health regenerates (moderate) & caps at setpoint. reward_on_improve=false:
+  // damage punishes, healing is neutral — so recovery never "refunds" the burn
+  // and fire is unambiguously net-aversive. Heal only sets how fast it's ready
+  // to be punished again (repeatable signal).
+  health_drive_ = body_.add_drive(
+      Drive{100, 100, 2.0, +0.01, {PAIN}, 0.05, 0.0, 100.0, /*reward_on_improve=*/false});
 
   // Dedicated motor neurons — no innate behavior, driven only by the learned
   // receptor→motor weights + ambient noise (exploration).
@@ -82,6 +87,13 @@ Simulation::Simulation() : net_(N, cfg::FANOUT), world_(cfg::WORLD_HALF) {
     net_.add_synapse(r, ML, w);
     net_.add_synapse(r, MR, w);
   }
+
+  // Innate withdrawal reflex: burn receptor → both motors (equal → forward
+  // thrust to flee the fire). Pinned; protected from the aversive rule so the
+  // pain it responds to doesn't weaken it. Approach-avoidance stays learned.
+  net_.add_synapse(NOCI, ML, static_cast<float>(cfg::NOCI_REFLEX_W));
+  net_.add_synapse(NOCI, MR, static_cast<float>(cfg::NOCI_REFLEX_W));
+  body_.set_protected_source(NOCI);
 }
 
 void Simulation::tick() {
@@ -98,8 +110,10 @@ void Simulation::tick() {
       body_.apply_contact(c.kind);
       if (c.kind == food_kind_)
         ++meals_;
-      else if (c.kind == fire_kind_)
+      else if (c.kind == fire_kind_) {
         ++burns_;
+        net_.increase_v(noci_neuron_, cfg::NOCI_AMP); // burn receptor fires
+      }
     }
     for (Binding &b : bindings_) {
       scratch_.assign(b.model->channels(), 0.0);

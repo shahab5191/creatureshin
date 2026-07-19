@@ -21,8 +21,16 @@ struct Drive {
   // bounds keep wellbeing (squared error) finite; clamp after every mutation
   double min_value = 0.0;
   double max_value = 200.0;
+  // If false, IMPROVING this drive gives no reward (only worsening punishes) —
+  // e.g. pain: getting hurt hurts, but healing shouldn't feel rewarding, else
+  // recovery "refunds" the pain and the creature seeks the harm. (§ hormone
+  // bug)
+  bool reward_on_improve = true;
+  double prev_value = 0.0; // set to value on add; used for per-drive ΔW
+
   void clamp() {
-    value = value < min_value ? min_value : (value > max_value ? max_value : value);
+    value =
+        value < min_value ? min_value : (value > max_value ? max_value : value);
   }
 
   double deficit() const { // one-sided shortfall below setpoint (§6)

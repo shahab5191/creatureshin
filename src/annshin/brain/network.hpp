@@ -71,6 +71,13 @@ public:
   void step();                      // one brain tick (§5.1–5.2)
   void apply_reward(double reward);  // §5.4: commit tags → weights (R from Body)
 
+  // Aversive conditioning: on pain, depress the INCOMING synapses of a motor
+  // neuron in proportion to each source's current activity — i.e. weaken
+  // whatever was actively driving this motor into the harm (the action pathway),
+  // not the sensor itself. `except_source` is left untouched (protects the
+  // withdrawal reflex from being weakened by the very pain it responds to).
+  void aversive_depress_inputs(int neuron, double gain, int except_source = -1);
+
   // Wire an innate (but plastic) pathway, e.g. sensor→motor. It carries NO
   // built-in policy (small weights); reward-STDP learns the mapping. Pinned so
   // punishment can reshape its weights but never delete the wire.

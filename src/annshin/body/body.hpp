@@ -33,6 +33,10 @@ public:
   void register_stimulus(int kind, std::vector<DriveEffect> effects);
   void apply_contact(int kind, double magnitude = 1.0); // kind → drive effects
 
+  // A source neuron whose synapses the aversive rule must NOT weaken (the
+  // innate withdrawal-reflex pathway).
+  void set_protected_source(int neuron) { protected_source_ = neuron; }
+
   // --- per brain tick, before net.step() ---
   void on_tick(ANNNetwork::Network &net);
 
@@ -54,6 +58,9 @@ private:
   std::vector<Drive> drives_;
   std::vector<Motor> motors_;
   std::unordered_map<int, std::vector<DriveEffect>> stimulus_map_;
+  bool pain_event_ = false;  // a harmful contact happened (independent of health clamp)
+  int protected_source_ = -1; // reflex source the aversive rule won't weaken
+  double pain_trace_ = 0.0; // lingering pain (decays); from one-sided drives
   double wellbeing_prev_ = 0.0;
   double last_hormone_ = 0.0;
   bool primed_ = false; // seed wellbeing_prev_ before first hormone

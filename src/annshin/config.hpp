@@ -22,10 +22,10 @@ inline constexpr double A_PLUS    = 0.010;   // potentiation amplitude
 inline constexpr double A_MINUS   = 0.012;   // depression (slightly stronger → stability)
 inline constexpr double TAU_PLUS  = 20.0;
 inline constexpr double TAU_MINUS = 20.0;
-inline constexpr tick_t STDP_WINDOW = 100;   // skip pairs older than this (~5·τ)
+inline constexpr tick_t STDP_WINDOW = 40;    // narrow STDP timing window
 
 // --- Plasticity rates (§4 "two routes") ---
-inline constexpr double ALPHA = 0.006;  // unsupervised Hebbian rate (keep < ETA)
+inline constexpr double ALPHA = 0.0;    // unsupervised off — reward drives learning
 inline constexpr double ETA   = 0.10;   // reward-modulated rate
 
 // --- Weights ---
@@ -35,8 +35,8 @@ inline constexpr double TAU_W   = 100000.0;  // slow forgetting / LTD (~100 s)
 inline constexpr double W_PRUNE = 0.01;      // prune floor (structural, §11)
 
 // --- Eligibility / reward (§5.4) ---
-inline constexpr double TAU_E    = 1000.0;   // eligibility trace decay (~1 s)
-inline constexpr tick_t H_RECENT = 5000;     // recently-fired horizon (~5·τ_e)
+inline constexpr double TAU_E    = 300.0;    // eligibility trace decay (narrow → tight credit)
+inline constexpr tick_t H_RECENT = 1500;     // recently-fired horizon (~5·τ_e)
 inline constexpr double K_REWARD = 0.5;      // wellbeing-change → hormone gain
 inline constexpr double R_EPS    = 1e-6;     // skip reward commit when |R| below this
 
@@ -65,17 +65,17 @@ inline constexpr int N_ODOR  = 12;   // receptors per nostril
 inline constexpr int K_SCENT = 3;    // receptors a single smell activates (sparse)
 
 // --- Curriculum ---
-inline constexpr tick_t CURRICULUM_WARMUP = 50000; // food-only ticks before fire
+inline constexpr tick_t CURRICULUM_WARMUP = 0;     // DIAGNOSTIC: fire from t=0
 
 // --- World (§8) ---
 inline constexpr double WORLD_HALF   = 12.0;  // world spans [-HALF, HALF] each axis
 inline constexpr double MOVE_GAIN    = 0.006; // thrust(rate) → distance / world-step
 inline constexpr double TURN_GAIN    = 0.004; // (rateL-rateR) → radians / world-step
 inline constexpr double SMELL_SCALE  = 12.0;  // smell = strength·exp(-dist/scale) (larger = farther reach)
-inline constexpr int    FOOD_COUNT   = 8;
-inline constexpr int    FIRE_COUNT   = 4;
+inline constexpr int    FOOD_COUNT   = 0;   // DIAGNOSTIC: food off
+inline constexpr int    FIRE_COUNT   = 6;
 inline constexpr double FOOD_RADIUS  = 0.6;
-inline constexpr double FIRE_RADIUS  = 0.7;
+inline constexpr double FIRE_RADIUS  = 0.8;
 inline constexpr double FOOD_ENERGY  = 30.0;  // §8 food:{energy:+30}
 inline constexpr double FIRE_HEALTH  = -20.0; // §8 fire:{health:-20}
 
@@ -84,8 +84,14 @@ inline constexpr double FIRE_HEALTH  = -20.0; // §8 fire:{health:-20}
 inline constexpr double NOISE_PROB = 0.04;    // per-neuron kick chance / tick
 inline constexpr double NOISE_AMP  = 0.5;     // kick size (θ0 = 1.0)
 
-// --- Reward shaping ---
-inline constexpr double R_MAX = 2.0;          // clamp |hormone| (avoid saturation)
+// --- Reward shaping (asymmetric: pain teaches harder than pleasure) ---
+inline constexpr double R_MAX_POS = 2.0;      // clamp on positive hormone
+inline constexpr double R_MAX_NEG = 8.0;      // clamp on negative hormone (pain bites)
+inline constexpr double PAIN_LINGER = 0.99;   // pain trace decay/tick (lingers ~hundreds of ticks)
+inline constexpr double PAIN_GAIN   = 0.01;   // pain-trace → hormone scale
+inline constexpr double AVERSIVE_GAIN = 0.35; // on pain, depress active pathways (targeted)
+inline constexpr double NOCI_AMP      = 4.0;  // burn-receptor current on fire contact
+inline constexpr double NOCI_REFLEX_W = 1.2;  // nociceptor→motor (innate withdrawal reflex)
 
 // --- Render loop / brain-viz ---
 inline constexpr int TICKS_PER_FRAME = 40;    // sim ticks per rendered frame

@@ -9,8 +9,9 @@ namespace annshin::render {
 // sim internals. v1 projects the 3D world top-down onto the x,z plane.
 
 struct WorldObjectView {
-  float x, z; // world x,z (top-down)
-  int kind;   // 0 = food, 1 = fire, …
+  float x, z;              // world x,z (top-down)
+  int kind;                // 0 = food, 1 = fire, …
+  float smell_radius = 0.f; // scent reach in world units (0 = odorless)
 };
 
 struct WorldFrame {
@@ -36,6 +37,7 @@ struct NeuronView {
   float excitation; // spike_rate(i), decayed to now
   float flash;      // 1.0 right after firing, fades to 0 (highlight)
   int polarity;     // +1 excitatory / -1 inhibitory
+  bool in_rf;       // in the reward/punish working set (fired within H_RECENT)
 };
 
 struct BrainEdgeView {

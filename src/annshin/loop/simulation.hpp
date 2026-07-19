@@ -43,6 +43,7 @@ private:
   bool fire_added_ = false; // curriculum: fire spawns only after warmup
   double fire_radius_ = 0.0;
   int fire_count_ = 0;
+  int noci_neuron_ = 0; // burn receptor (nociceptor)
 };
 
 } // namespace annshin::loop

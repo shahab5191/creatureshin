@@ -3,6 +3,7 @@
 
 #include <cstdio>
 #include <cstring>
+#include <cmath>
 
 #ifdef ANNSHIN_HAVE_RAYLIB
 #include "annshin/render/raylib_renderer.hpp"
@@ -38,11 +39,18 @@ int main(int argc, char **argv) {
     render::RaylibRenderer r;
     r.begin();
     while (!r.should_close()) {
-      for (int k = 0; k < config::TICKS_PER_FRAME; ++k)
+      double peak_h = 0.0; // capture the frame's biggest |hormone| so brief
+                           // spikes (e.g. a 1-tick burn) are visible in the HUD
+      for (int k = 0; k < config::TICKS_PER_FRAME; ++k) {
         sim.tick();
+        double h = sim.body().last_hormone();
+        if (std::fabs(h) > std::fabs(peak_h))
+          peak_h = h;
+      }
       render::RenderFrame f;
       f.world = render::build_world_frame(sim.world());
       f.body = render::build_body_frame(sim.body(), sim.net());
+      f.body.hormone = static_cast<float>(peak_h); // frame peak, not instant
       f.brain = render::build_brain_frame(sim.net());
       f.meals = sim.meals();
       f.burns = sim.burns();
