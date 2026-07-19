@@ -42,6 +42,7 @@ struct Synapse {
   double elig_tag = 0.0; // eligibility trace; decays with τ_e (§5.4)
   tick_t touch_time = 0; // last tick e/w were updated (lazy anchor, §5.5)
   bool alive = true;     // false once pruned (slot on the free list)
+  bool pinned = false;   // innate pathway: never pruned (learning tunes weight)
 };
 
 // Recently-fired entry: (neuron id, tick it fired). Working set for reward.
@@ -70,6 +71,16 @@ public:
   void step();                      // one brain tick (§5.1–5.2)
   void apply_reward(double reward);  // §5.4: commit tags → weights (R from Body)
 
+  // Wire an innate (but plastic) pathway, e.g. sensor→motor. It carries NO
+  // built-in policy (small weights); reward-STDP learns the mapping. Pinned so
+  // punishment can reshape its weights but never delete the wire.
+  void add_synapse(int i, int j, float w) {
+    int g = create_edge(i, j, w, current_tick);
+    pool_[g].pinned = true;
+  }
+  // Force a neuron excitatory (sensory afferents / motor drivers must excite).
+  void force_excitatory(int i) { neurons[i].polarity = 1; }
+
   // --- observation helpers ---
   std::size_t frontier_size() const { return frontier.size(); }
   std::size_t edge_count() const { return pool_.size() - free_list_.size(); }
@@ -85,6 +96,18 @@ public:
                                 annshin::config::TAU_MOTOR);
   }
 
+  // --- brain-viz read accessors (positions are static; only activation moves) ---
+  std::size_t neuron_count() const { return neurons.size(); }
+  Vec3 neuron_pos(int i) const { return neurons[i].pos; }
+  int8_t neuron_polarity(int i) const { return neurons[i].polarity; }
+  tick_t last_spike_time(int i) const { return neurons[i].last_spike_time; }
+
+  struct EdgeView {
+    int src, tgt;
+    float w;
+  };
+  void collect_edges(std::vector<EdgeView> &out) const; // alive synapses (graph)
+
 private:
   void fire(int j, tick_t t);
   void touch_synapse(Synapse &s, tick_t t); // §5.5: lazy trace + forgetting
@@ -93,7 +116,7 @@ private:
 
   // --- structural plasticity (§11) ---
   int alloc_synapse(int i, int j, float w, tick_t t); // pool slot (reuse/append)
-  void create_edge(int i, int j, float w, tick_t t);  // + register out/in edges
+  int create_edge(int i, int j, float w, tick_t t);   // + register out/in edges
   void delete_edge(int gidx);                         // unregister + free slot
   bool edge_exists(int i, int j) const;               // scan out_edges_[i]
   void try_form(int j, tick_t t);   // §11.2 grow inputs to a just-fired neuron

@@ -40,6 +40,9 @@ private:
   int energy_drive_ = 0, health_drive_ = 0;
   int food_kind_ = 0, fire_kind_ = 0;
   int meals_ = 0, burns_ = 0;
+  bool fire_added_ = false; // curriculum: fire spawns only after warmup
+  double fire_radius_ = 0.0;
+  int fire_count_ = 0;
 };
 
 } // namespace annshin::loop

@@ -83,6 +83,7 @@ void Body::on_tick(ANNNetwork::Network &net) {
     primed_ = true;
   }
   double R = cfg::K_REWARD * (W - wellbeing_prev_);
+  R = R > cfg::R_MAX ? cfg::R_MAX : (R < -cfg::R_MAX ? -cfg::R_MAX : R);
   wellbeing_prev_ = W;
   last_hormone_ = R;
   if (std::fabs(R) > cfg::R_EPS)

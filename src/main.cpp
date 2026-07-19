@@ -43,6 +43,7 @@ int main(int argc, char **argv) {
       render::RenderFrame f;
       f.world = render::build_world_frame(sim.world());
       f.body = render::build_body_frame(sim.body(), sim.net());
+      f.brain = render::build_brain_frame(sim.net());
       f.meals = sim.meals();
       f.burns = sim.burns();
       f.tick = static_cast<long long>(sim.net().tick());

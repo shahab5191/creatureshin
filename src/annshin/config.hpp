@@ -25,12 +25,12 @@ inline constexpr double TAU_MINUS = 20.0;
 inline constexpr tick_t STDP_WINDOW = 100;   // skip pairs older than this (~5·τ)
 
 // --- Plasticity rates (§4 "two routes") ---
-inline constexpr double ALPHA = 0.02;   // unsupervised Hebbian rate (keep < ETA)
+inline constexpr double ALPHA = 0.006;  // unsupervised Hebbian rate (keep < ETA)
 inline constexpr double ETA   = 0.10;   // reward-modulated rate
 
 // --- Weights ---
 inline constexpr double W_MAX   = 1.0;       // saturation cap
-inline constexpr double W_INIT  = 0.05;      // initial weight of a synapse (§3)
+inline constexpr double W_INIT  = 0.08;      // initial weight of a synapse (§3)
 inline constexpr double TAU_W   = 100000.0;  // slow forgetting / LTD (~100 s)
 inline constexpr double W_PRUNE = 0.01;      // prune floor (structural, §11)
 
@@ -45,6 +45,7 @@ inline constexpr unsigned RNG_SEED = 1234;   // deterministic init
 
 // --- Structure ---
 inline constexpr double INHIB_FRAC = 0.2;    // fraction of inhibitory neurons
+inline constexpr double INHIB_GAIN = 5.0;    // inhibitory synapses ×stronger (balanced net)
 inline constexpr int    FANOUT     = 15;     // initial outgoing synapses per neuron
 
 // --- Structural plasticity (§11) ---
@@ -59,11 +60,18 @@ inline constexpr double TAU_MOTOR = 50.0;    // motor firing-rate smoothing
 // --- Loop (§5.7) ---
 inline constexpr int TICKS_PER_WORLD_STEP = 10;
 
+// --- Olfaction (sparse scent code) ---
+inline constexpr int N_ODOR  = 12;   // receptors per nostril
+inline constexpr int K_SCENT = 3;    // receptors a single smell activates (sparse)
+
+// --- Curriculum ---
+inline constexpr tick_t CURRICULUM_WARMUP = 50000; // food-only ticks before fire
+
 // --- World (§8) ---
 inline constexpr double WORLD_HALF   = 12.0;  // world spans [-HALF, HALF] each axis
-inline constexpr double MOVE_GAIN    = 0.003; // thrust(rate) → distance / world-step
-inline constexpr double TURN_GAIN    = 0.010; // (rateL-rateR) → radians / world-step
-inline constexpr double SMELL_SCALE  = 6.0;   // smell = strength·exp(-dist/scale)
+inline constexpr double MOVE_GAIN    = 0.006; // thrust(rate) → distance / world-step
+inline constexpr double TURN_GAIN    = 0.004; // (rateL-rateR) → radians / world-step
+inline constexpr double SMELL_SCALE  = 12.0;  // smell = strength·exp(-dist/scale) (larger = farther reach)
 inline constexpr int    FOOD_COUNT   = 8;
 inline constexpr int    FIRE_COUNT   = 4;
 inline constexpr double FOOD_RADIUS  = 0.6;
@@ -71,7 +79,16 @@ inline constexpr double FIRE_RADIUS  = 0.7;
 inline constexpr double FOOD_ENERGY  = 30.0;  // §8 food:{energy:+30}
 inline constexpr double FIRE_HEALTH  = -20.0; // §8 fire:{health:-20}
 
-// --- Render loop ---
+// --- Ambient noise (fluctuating sub-threshold drive; balanced net fires on
+//     fluctuations, not on forced supra-threshold kicks) ---
+inline constexpr double NOISE_PROB = 0.04;    // per-neuron kick chance / tick
+inline constexpr double NOISE_AMP  = 0.5;     // kick size (θ0 = 1.0)
+
+// --- Reward shaping ---
+inline constexpr double R_MAX = 2.0;          // clamp |hormone| (avoid saturation)
+
+// --- Render loop / brain-viz ---
 inline constexpr int TICKS_PER_FRAME = 40;    // sim ticks per rendered frame
+inline constexpr tick_t FLASH_TICKS  = 80;    // how long a fired neuron stays lit
 
 } // namespace annshin::config

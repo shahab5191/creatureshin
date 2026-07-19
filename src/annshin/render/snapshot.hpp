@@ -11,5 +11,6 @@ namespace annshin::render {
 WorldFrame build_world_frame(const annshin::world::World &w);
 BodyFrame build_body_frame(const annshin::body::Body &b,
                            const ANNNetwork::Network &net);
+BrainFrame build_brain_frame(const ANNNetwork::Network &net);
 
 } // namespace annshin::render

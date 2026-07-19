@@ -1,4 +1,5 @@
 #pragma once
+#include "annshin/config.hpp"
 #include "annshin/world/geom.hpp"
 #include <vector>
 
@@ -15,15 +16,15 @@ struct SensoryModel {
                       std::vector<double> &out) const = 0;
 };
 
-// v1 olfaction: samples smell concentration at two nostrils (left/right of the
-// heading) for objects on `channel`. Reads World::smell_at, so swapping the
-// nearest-object smell for a diffusing field later needs no change here.
-struct SmellSense : SensoryModel {
-  int channel;
+// Olfaction: samples the 4-receptor odor vector at two nostrils (left/right of
+// the heading) → 8 neurons [L0 L1 L2 L3 | R0 R1 R2 R3]. The *pattern* says which
+// smell (identity), left-vs-right says direction. Reads World::odor_at, so a
+// diffusing odor field later is a drop-in with no change here.
+struct OdorSense : SensoryModel {
   double nose_fwd, nose_sep;
-  explicit SmellSense(int channel, double nose_fwd = 0.5, double nose_sep = 0.5)
-      : channel(channel), nose_fwd(nose_fwd), nose_sep(nose_sep) {}
-  int channels() const override { return 2; }
+  explicit OdorSense(double nose_fwd = 0.5, double nose_sep = 0.5)
+      : nose_fwd(nose_fwd), nose_sep(nose_sep) {}
+  int channels() const override { return 2 * annshin::config::N_ODOR; }
   void sample(const World &w, const Pose &obs,
               std::vector<double> &out) const override;
 };

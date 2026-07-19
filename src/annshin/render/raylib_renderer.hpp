@@ -8,7 +8,7 @@ namespace annshin::render {
 // RenderFrame, so a 3D world view / brain graph later is just another Renderer.
 class RaylibRenderer : public Renderer {
 public:
-  explicit RaylibRenderer(int width = 960, int height = 720);
+  explicit RaylibRenderer(int width = 1280, int height = 720);
   void begin() override;
   bool should_close() override;
   void draw(const RenderFrame &) override;

@@ -28,12 +28,32 @@ struct BodyFrame {
   std::vector<DriveView> drives;
 };
 
+// Brain graph: one node per neuron + synapse edges. Positions are static (unit
+// cube); `excitation` (rate) and `flash` (just-fired highlight, 1→0) change each
+// frame. `polarity` tints exc/inhib.
+struct NeuronView {
+  float x, y, z;    // unit-cube position
+  float excitation; // spike_rate(i), decayed to now
+  float flash;      // 1.0 right after firing, fades to 0 (highlight)
+  int polarity;     // +1 excitatory / -1 inhibitory
+};
+
+struct BrainEdgeView {
+  int a, b;  // neuron indices (source → target)
+  float w;   // weight
+};
+
+struct BrainFrame {
+  std::vector<NeuronView> neurons;
+  std::vector<BrainEdgeView> edges;
+};
+
 struct RenderFrame {
   WorldFrame world;
   BodyFrame body;
+  BrainFrame brain;
   int meals = 0, burns = 0;
   long long tick = 0;
-  // Reserved: BrainTopology/BrainFrame for the future 3D brain-graph view.
 };
 
 } // namespace annshin::render

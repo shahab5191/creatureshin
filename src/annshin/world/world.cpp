@@ -44,19 +44,21 @@ StepResult World::step(double thrust, double turn) {
   return res;
 }
 
-double World::smell_at(Vec3 p, int channel) const {
-  double c = 0.0;
+void World::odor_at(Vec3 p, double *out) const {
+  for (int k = 0; k < cfg::N_ODOR; ++k)
+    out[k] = 0.0;
   for (const Entity &e : objects_) {
     if (!e.alive)
       continue;
     const StimulusDef &d = defs_[e.kind];
-    if (d.smell_channel != channel)
+    if (d.smell_strength <= 0.0)
       continue;
     double dx = e.pos.x - p.x, dy = e.pos.y - p.y, dz = e.pos.z - p.z;
     double dist = std::sqrt(dx * dx + dy * dy + dz * dz);
-    c += d.smell_strength * std::exp(-dist / cfg::SMELL_SCALE);
+    double intensity = d.smell_strength * std::exp(-dist / cfg::SMELL_SCALE);
+    for (int k = 0; k < cfg::N_ODOR; ++k)
+      out[k] += intensity * d.scent[k];
   }
-  return c;
 }
 
 // --- KinematicMovement (v1 physics) ---
@@ -78,14 +80,20 @@ void KinematicMovement::advance(Creature &c, double thrust, double turn,
   c.pose.pos.z = wrap(c.pose.pos.z);
 }
 
-// --- SmellSense (v1 olfaction) ---
-void SmellSense::sample(const World &w, const Pose &obs,
-                        std::vector<double> &out) const {
-  out.assign(2, 0.0);
+// --- OdorSense: N_ODOR receptors × 2 nostrils channels ---
+void OdorSense::sample(const World &w, const Pose &obs,
+                       std::vector<double> &out) const {
+  const int NR = cfg::N_ODOR;
+  out.assign(2 * NR, 0.0);
   Vec3 nose = obs.pos + forward_xz(obs.heading) * nose_fwd;
   Vec3 right = right_xz(obs.heading) * nose_sep;
-  out[0] = w.smell_at(nose - right, channel); // left nostril
-  out[1] = w.smell_at(nose + right, channel); // right nostril
+  std::vector<double> l(NR), r(NR);
+  w.odor_at(nose - right, l.data()); // left nostril
+  w.odor_at(nose + right, r.data()); // right nostril
+  for (int k = 0; k < NR; ++k) {
+    out[k] = l[k];
+    out[NR + k] = r[k];
+  }
 }
 
 } // namespace annshin::world

@@ -104,10 +104,11 @@ int Network::alloc_synapse(int i, int j, float w, tick_t t) {
   return static_cast<int>(pool_.size()) - 1;
 }
 
-void Network::create_edge(int i, int j, float w, tick_t t) {
+int Network::create_edge(int i, int j, float w, tick_t t) {
   int gidx = alloc_synapse(i, j, w, t);
   out_edges_[i].push_back(gidx);
   in_edges_[j].push_back(gidx);
+  return gidx;
 }
 
 void Network::delete_edge(int gidx) {
@@ -164,7 +165,7 @@ void Network::flush_pruned() {
   // been rescued by a later potentiation/reward update.
   for (int gidx : to_prune_) {
     Synapse &s = pool_[gidx];
-    if (s.alive && s.w < cfg::W_PRUNE)
+    if (s.alive && !s.pinned && s.w < cfg::W_PRUNE) // pinned wires never deleted
       delete_edge(gidx);
   }
   to_prune_.clear();
@@ -211,14 +212,22 @@ void Network::step() {
   // during the sense phase (before this call) has already populated it. It is
   // cleared at the end of the tick instead.
 
+  // Ambient background activity: real cortex is never silent. A sparse Poisson
+  // kick keeps the net spontaneously firing so STDP has correlations to shape.
+  for (std::size_t i = 0; i < neurons.size(); ++i)
+    if (uni01_(rng_) < cfg::NOISE_PROB)
+      increase_v(static_cast<int>(i), cfg::NOISE_AMP);
+
   // --- 5.1 Propagate frontier (scatter + pre-side STDP = depression) ---
   for (int i : frontier) {
     const int8_t sign = neurons[i].polarity;
+    // inhibitory synapses are ×INHIB_GAIN stronger → E/I balance (no runaway)
+    const double eff = sign > 0 ? 1.0 : -cfg::INHIB_GAIN;
     for (int gidx : out_edges_[i]) {
       Synapse &s = pool_[gidx];
       Neuron &nj = neurons[s.target];
 
-      nj.v = decay(nj.v, t - nj.last_tick, cfg::TAU_V) + sign * s.w;
+      nj.v = decay(nj.v, t - nj.last_tick, cfg::TAU_V) + eff * s.w;
       nj.last_tick = t;
       mark_touched(s.target, t);
 
@@ -288,4 +297,12 @@ double Network::total_weight() const {
     if (s.alive)
       sum += s.w;
   return sum;
+}
+
+void Network::collect_edges(std::vector<EdgeView> &out) const {
+  out.clear();
+  out.reserve(pool_.size());
+  for (const Synapse &s : pool_)
+    if (s.alive)
+      out.push_back({s.source, s.target, s.w});
 }

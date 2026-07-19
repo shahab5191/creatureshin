@@ -32,8 +32,9 @@ public:
   std::span<const Entity> objects() const { return objects_; }
   const StimulusDef &stimulus(int kind) const { return defs_[kind]; }
 
-  // --- sensory primitive (SmellSense reads this) ---
-  double smell_at(Vec3 p, int channel) const;
+  // --- sensory primitive (OdorSense reads this) ---
+  // Intensity-weighted blend of nearby scents at p → N_ODOR receptor values.
+  void odor_at(Vec3 p, double *out) const;
 
 private:
   double half_;
