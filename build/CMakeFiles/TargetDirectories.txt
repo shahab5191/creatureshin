@@ -1,0 +1,5 @@
+/home/shahab/projects/annshin/build/CMakeFiles/edit_cache.dir
+/home/shahab/projects/annshin/build/CMakeFiles/rebuild_cache.dir
+/home/shahab/projects/annshin/build/src/CMakeFiles/annshin.dir
+/home/shahab/projects/annshin/build/src/CMakeFiles/edit_cache.dir
+/home/shahab/projects/annshin/build/src/CMakeFiles/rebuild_cache.dir

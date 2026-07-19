@@ -1,0 +1,8 @@
+{
+	"InstallScripts" : 
+	[
+		"/home/shahab/projects/annshin/build/cmake_install.cmake",
+		"/home/shahab/projects/annshin/build/src/cmake_install.cmake"
+	],
+	"Parallel" : false
+}
